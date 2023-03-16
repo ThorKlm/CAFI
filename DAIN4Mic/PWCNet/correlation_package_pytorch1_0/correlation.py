@@ -1,13 +1,16 @@
+from abc import ABC
+
 import torch
 from torch.nn.modules.module import Module
 from torch.autograd import Function
 import correlation_cuda
 from empty_cache import empty_cache
 
-class CorrelationFunction(Function):
+
+class CorrelationFunction(Function, ABC):
 
     def __init__(self, pad_size=3, kernel_size=3, max_displacement=20, stride1=1, stride2=2, corr_multiply=1):
-        super(CorrelationFunction, self).__init__()
+        super(CorrelationFunction, self)
         self.pad_size = pad_size
         self.kernel_size = kernel_size
         self.max_displacement = max_displacement
@@ -16,8 +19,8 @@ class CorrelationFunction(Function):
         self.corr_multiply = corr_multiply
         # self.out_channel = ((max_displacement/stride2)*2 + 1) * ((max_displacement/stride2)*2 + 1)
 
-    def forward(self, input):
-        [input1, input2] = input
+    @staticmethod
+    def forward(self, input1, input2):
         self.save_for_backward(input1, input2)
         empty_cache()
 
@@ -26,8 +29,9 @@ class CorrelationFunction(Function):
             rbot2 = input2.new()
             output = input1.new()
 
-            correlation_cuda.forward(input1, input2, rbot1, rbot2, output, 
-                self.pad_size, self.kernel_size, self.max_displacement,self.stride1, self.stride2, self.corr_multiply)
+            correlation_cuda.forward(input1, input2, rbot1, rbot2, output,
+                                     self.pad_size, self.kernel_size, self.max_displacement, self.stride1, self.stride2,
+                                     self.corr_multiply)
         empty_cache()
         return output
 
@@ -42,7 +46,8 @@ class CorrelationFunction(Function):
             grad_input2 = input2.new()
 
             correlation_cuda.backward(input1, input2, rbot1, rbot2, grad_output, grad_input1, grad_input2,
-                self.pad_size, self.kernel_size, self.max_displacement,self.stride1, self.stride2, self.corr_multiply)
+                                      self.pad_size, self.kernel_size, self.max_displacement, self.stride1,
+                                      self.stride2, self.corr_multiply)
         empty_cache()
         return grad_input1, grad_input2
 
@@ -57,9 +62,9 @@ class Correlation(Module):
         self.stride2 = stride2
         self.corr_multiply = corr_multiply
 
-
+    # @staticmethod
     def forward(self, input1, input2):
-        result = CorrelationFunction(self.pad_size, self.kernel_size, self.max_displacement, self.stride1, self.stride2, self.corr_multiply)([input1, input2])#  .apply
+        result = CorrelationFunction(self.pad_size, self.kernel_size, self.max_displacement, self.stride1, self.stride2,
+                                     self.corr_multiply)(input1, input2)  # .apply
         empty_cache()
         return result
-
