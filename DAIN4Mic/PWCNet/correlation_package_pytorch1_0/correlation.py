@@ -60,7 +60,7 @@ class Correlation(Module):
 
     def forward(self, input1, input2):
 
-        result = CorrelationFunction(self.pad_size, self.kernel_size, self.max_displacement, self.stride1, self.stride2, self.corr_multiply)(input1, input2)# .apply
+        result = CorrelationFunction(self.pad_size, self.kernel_size, self.max_displacement, self.stride1, self.stride2, self.corr_multiply)(input1, input2)#  .apply
         empty_cache()
         return result
 
