@@ -16,8 +16,8 @@ class CorrelationFunction(Function):
         self.corr_multiply = corr_multiply
         # self.out_channel = ((max_displacement/stride2)*2 + 1) * ((max_displacement/stride2)*2 + 1)
 
-    @staticmethod
-    def forward(self, input1, input2):
+    def forward(self, input):
+        [input1, input2] = input
         self.save_for_backward(input1, input2)
         empty_cache()
 
@@ -59,8 +59,7 @@ class Correlation(Module):
 
 
     def forward(self, input1, input2):
-
-        result = CorrelationFunction(self.pad_size, self.kernel_size, self.max_displacement, self.stride1, self.stride2, self.corr_multiply)(input1, input2)#  .apply
+        result = CorrelationFunction(self.pad_size, self.kernel_size, self.max_displacement, self.stride1, self.stride2, self.corr_multiply)([input1, input2])#  .apply
         empty_cache()
         return result
 
