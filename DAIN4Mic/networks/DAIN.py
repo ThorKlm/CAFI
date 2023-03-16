@@ -22,6 +22,10 @@ class DAIN(torch.nn.Module):
 
         # base class initialization
         super(DAIN, self).__init__()
+
+        # supress warnings
+        import warnings
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         
         self.filter_size = filter_size
         self.training = training
