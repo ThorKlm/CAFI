@@ -1,8 +1,12 @@
 import torch
-from torch.nn.modules.module import Module
-from torch.autograd import Function
-import correlation_cuda
-from empty_cache import empty_cache
+import warnings
+
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    from torch.autograd import Function
+    import correlation_cuda
+    from empty_cache import empty_cache
+    from torch.nn.modules.module import Module
 
 class CorrelationFunction(Function):
 
