@@ -7,7 +7,7 @@ import correlation_cuda
 from empty_cache import empty_cache
 
 
-class CorrelationFunction(Function, ABC):
+class CorrelationFunction(Function):
 
     def __init__(self, pad_size=3, kernel_size=3, max_displacement=20, stride1=1, stride2=2, corr_multiply=1):
         super(CorrelationFunction, self)
@@ -65,6 +65,6 @@ class Correlation(Module):
     # @staticmethod
     def forward(self, input1, input2):
         result = CorrelationFunction(self.pad_size, self.kernel_size, self.max_displacement, self.stride1, self.stride2,
-                                     self.corr_multiply)(input1, input2)  # .apply
+                                     self.corr_multiply).apply(input1, input2)
         empty_cache()
         return result
